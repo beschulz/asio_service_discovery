@@ -97,16 +97,11 @@ class service_discoverer
       socket_.set_option(
           boost::asio::ip::multicast::join_group(multicast_address));
 
-      socket_.async_receive_from(
-          boost::asio::buffer(data_, max_length), sender_endpoint_,
-          [this](const boost::system::error_code& error, size_t bytes_recvd)
-          {
-              this->handle_receive_from(error, bytes_recvd);
-          });
+      start_receive();
     }
 
   private:
-    void handle_message(const std::string& message)
+    void handle_message(const std::string& message, const boost::asio::ip::udp::endpoint& sender_endpoint)
     {
       std::vector<std::string> tokens;
       { // simpleton parser
@@ -152,7 +147,7 @@ class service_discoverer
       {
         service_name,
         computer_name,
-        boost::asio::ip::tcp::endpoint(sender_endpoint_.address(), port),
+        boost::asio::ip::tcp::endpoint(sender_endpoint.address(), port),
         std::chrono::steady_clock::now()
       };
 
@@ -175,30 +170,37 @@ class service_discoverer
       }
     }
 
-    void handle_receive_from(const boost::system::error_code& error, size_t bytes_recvd)
+    void start_receive()
     {
-      if (!error)
-      {
-        handle_message({data_, data_+bytes_recvd});
+        // first do a receive with null_buffers to determine the size
+        socket_.async_receive(boost::asio::null_buffers(),
+            [this](const boost::system::error_code& error, unsigned int){
+            size_t bytes_available = socket_.available();
 
-        socket_.async_receive_from(
-            boost::asio::buffer(data_, max_length), sender_endpoint_,
-            [this](const boost::system::error_code& error, size_t bytes_recvd)
-            {
-                this->handle_receive_from(error, bytes_recvd);
-            });
-      }
-      else
-      {
-        std::cerr << error.message() << std::endl;
-      }
+            auto receive_buffer = std::make_shared<std::vector<char>>(bytes_available);
+            auto sender_endpoint = std::make_shared<boost::asio::ip::udp::endpoint>();
+
+            socket_.async_receive_from(
+                boost::asio::buffer(receive_buffer->data(), receive_buffer->size()), *sender_endpoint,
+                [this, receive_buffer, sender_endpoint] // we hold on to the shared_ptrs, so that it does not delete it's contents
+                (const boost::system::error_code& error, size_t bytes_recvd)
+                {
+                    if (error)
+                    {
+                        std::cerr << error.message() << std::endl;
+                    }
+                    else
+                    {
+                        this->handle_message({ receive_buffer->data(), receive_buffer->data() + bytes_recvd }, *sender_endpoint);
+                        start_receive();
+                    }
+                });
+
+        });
     }
 
     const std::string listen_for_service_;
     boost::asio::ip::udp::socket socket_;
-    boost::asio::ip::udp::endpoint sender_endpoint_;
-    enum { max_length = 1024 };
-    char data_[max_length];
     on_service_discovered_t on_service_discovered_;
 };
 
