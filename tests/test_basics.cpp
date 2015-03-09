@@ -129,6 +129,8 @@ BOOST_AUTO_TEST_SUITE( basic_tests )
                     }
 
                     did_discover_service = !services.empty();
+
+                    io_service.stop();
                 });
 
             boost::asio::deadline_timer timer(io_service);
