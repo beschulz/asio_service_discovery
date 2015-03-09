@@ -46,7 +46,7 @@ the optional callback is called.
 
 ```
   boost::asio::io_service io_service;
-  betabugs::networking::service_discoverer discoverer(io_service, "my_service", 1337,
+  betabugs::networking::service_discoverer discoverer(io_service, "my_service",
   [](const service_discoverer::services& services){
     std::clog << "my_service is available on the following machines:" << std::endl;
     for(const auto& service : services)
