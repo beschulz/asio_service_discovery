@@ -57,3 +57,11 @@ the optional callback is called.
 ## License
 
 This library is Distributed under the [Boost Software License, Version 1.0](http://www.boost.org/LICENSE_1_0.txt) .
+
+## Bugs
+
+In case you find any bugs, please don't hesitate to contact me. Also pull-requests are highly apprechiated.
+
+## Platform support
+
+The discovery *should* work on any platform, that is supported by boost::asio. It's currently only tested on OSX. If you plan on using this on iOS or Android, please report you experience.
