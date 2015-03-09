@@ -56,4 +56,4 @@ the optional callback is called.
 
 ## License
 
-This library is Distributed under the (Boost Software License Version 1.0)[http://www.boost.org/LICENSE_1_0.txt] .
+This library is Distributed under the [Boost Software License, Version 1.0](http://www.boost.org/LICENSE_1_0.txt) .
