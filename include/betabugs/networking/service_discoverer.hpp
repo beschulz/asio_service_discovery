@@ -18,7 +18,7 @@ namespace networking {
 
 /*!
 * Class to discover services announced by the service_announcer
-* use auto discoverer = service_discoverer(io_service, name_of_my_service, on_service_discovered);
+* use service_discoverer discoverer(io_service, name_of_my_service, on_service_discovered);
 * on_service_discovered is a std::function, that gets a services set passed as its first and only
 * argument.
 *

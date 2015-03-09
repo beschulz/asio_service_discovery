@@ -17,7 +17,7 @@ namespace networking {
 
 /*!
 * class to announce a named network service, that can be discovered via the service_discoverer.
-* usage: auto announcer = service_announcer(io_service, name_of_my_service, port_this_service_runs_on);
+* usage: service_announcer announcer(io_service, name_of_my_service, port_this_service_runs_on);
 *
 * Note: In case of error, this class just prints to std::cerr
 *       In case of an unknown service, this class prints it to std::clog
@@ -76,7 +76,7 @@ class service_announcer
 		std::ostringstream os;
 		boost::system::error_code error_code;
 
-		// "OSM:my_computer:2052"
+		// "my_service_name:my_computer:2052"
 		os << service_name_
 			<< ":" << boost::asio::ip::host_name(error_code)
 			<< ":" << service_port_;
