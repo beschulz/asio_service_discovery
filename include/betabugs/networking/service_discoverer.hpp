@@ -30,10 +30,10 @@ class service_discoverer
   public:
     struct service
     {
-      const std::string service_name; ///< the name of the service
-      const std::string computer_name; ///< the name of the computer the service is running on
-      const boost::asio::ip::tcp::endpoint endpoint; ///< enpoint you should connect to
-      const std::chrono::steady_clock::time_point last_seen;
+      /* const */ std::string service_name; ///< the name of the service
+      /* const */ std::string computer_name; ///< the name of the computer the service is running on
+      /* const */ boost::asio::ip::tcp::endpoint endpoint; ///< enpoint you should connect to
+      /* const */ std::chrono::steady_clock::time_point last_seen;
 
       bool operator < (const service& o) const
       {
