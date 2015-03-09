@@ -6,6 +6,9 @@ The best way to get started is having a [look at the tests](tests).
 Basic functionality is derived from [boost::asios udp multicast example](http://www.boost.org/doc/libs/1_37_0/doc/html/boost_asio/example/multicast/)
 .
 
+> **Note**
+> the max packet size for a udp packet is limited. This library supports whatever the maximum size for udp packets on the machine(s) it's running on is (~8kb on my machine). But keep that in mind, when choosing a service name. But anything below a kb will probably be allright. If you get a "Message to long" error, be sure, that you did not chose a ridiculously long service name.
+
 ## requirements
 
 - asio_service_discovery is using boost::asio, therefore you need the boost asio headers and you need to link agains boost_system.
