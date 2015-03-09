@@ -2,7 +2,7 @@
 
 Components for service discovery via udp multicasting. It's using boost::asio for async networking. It's non-blocking and non-locking.
 
-The best way to get started is having a look at the tests.
+The best way to get started is having a [look at the tests](tests).
 Basic functionality is derived from [boost::asios udp multicast example](http://www.boost.org/doc/libs/1_37_0/doc/html/boost_asio/example/multicast/)
 .
 
@@ -16,13 +16,13 @@ Basic functionality is derived from [boost::asios udp multicast example](http://
 
 There are two components: service_announcer and service_discoverer.
 
-### The Announcer
+### [The Announcer](include/betabugs/networking/service_announcer.hpp)
 
 The announcer multicasts information about the service it's announcing in one second intervals.
 The packet format is: service_name:computer_name:port
 You have to pass service_name and service_port to the service_announcer. they can be freely chosen.
 
-### The Discoverer
+### [The Discoverer](include/betabugs/networking/service_discoverer.hpp)
 
 The discoverer listens for incomming multicast packets that match the service_name it was configured with.
 It hold a set of service_discoverer::service objects. Each time a packet comes in, it is parsed and if the
