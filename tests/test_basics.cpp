@@ -8,11 +8,35 @@
 using namespace betabugs::networking;
 
 BOOST_AUTO_TEST_SUITE( basic_tests )
+    BOOST_AUTO_TEST_CASE( test_equality )
+    {
+        service_discoverer::service a{
+            "service_name",
+            "computer_name",
+            boost::asio::ip::tcp::endpoint( boost::asio::ip::address::from_string("1.2.3.4"), 1337),
+            std::chrono::steady_clock::now()
+        };
+
+        service_discoverer::service b = a;
+        BOOST_CHECK_EQUAL(a, b);
+
+        // equality ignores last_seen
+        service_discoverer::service c = a;
+        BOOST_CHECK_EQUAL(a, c);
+        c.last_seen = std::chrono::steady_clock::now();
+        BOOST_CHECK_EQUAL(a, c);
+
+        service_discoverer::service d = a;
+        BOOST_CHECK_EQUAL(a, d);
+        d.endpoint.port(1338);
+        BOOST_CHECK_NE(a, d);
+        BOOST_CHECK_LT(a, d);
+        BOOST_CHECK( !(d<a) );
+    }
 
     BOOST_AUTO_TEST_CASE( test_basic_functionality )
     {
         boost::asio::io_service io_service;
-
 
         service_announcer announcer(io_service, "my_service", 1337);
 
@@ -47,9 +71,7 @@ BOOST_AUTO_TEST_SUITE( basic_tests )
         io_service.run();
     }
 
-    /*
-    * Test, that only services subscribed to are passed to the callback
-    * */
+    // Test, that only services subscribed to are passed to the callback
     BOOST_AUTO_TEST_CASE( test_service_filtering )
     {
         boost::asio::io_service io_service;
@@ -194,6 +216,43 @@ BOOST_AUTO_TEST_SUITE( basic_tests )
                     BOOST_CHECK(did_discover_service);
                     io_service.stop();
                 });
+
+        io_service.run();
+    }
+
+    BOOST_AUTO_TEST_CASE( test_multiple_services )
+    {
+        boost::asio::io_service io_service;
+
+        service_announcer announcer1(io_service, "my_service", 1337);
+        service_announcer announcer2(io_service, "my_service", 1338);
+
+        std::size_t number_of_discovered_services = 0;
+        service_discoverer discoverer(io_service, "my_service",
+        [&io_service, &number_of_discovered_services]
+        (const service_discoverer::services& services)
+        {
+            BOOST_CHECK(!services.empty());
+
+            for(const auto& service : services)
+            {
+                BOOST_CHECK_EQUAL(service.service_name, "my_service");
+                BOOST_CHECK_EQUAL(service.computer_name, boost::asio::ip::host_name());
+            }
+
+            number_of_discovered_services = services.size();
+        });
+
+        boost::asio::deadline_timer timer(io_service);
+        timer.expires_from_now(boost::posix_time::seconds(2));
+
+        timer.async_wait(
+        [&io_service, &number_of_discovered_services]
+        (const boost::system::error_code& error)
+        {
+            BOOST_CHECK_EQUAL(number_of_discovered_services, 2);
+            io_service.stop();
+        });
 
         io_service.run();
     }
