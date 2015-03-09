@@ -39,8 +39,8 @@ class service_discoverer
       {
         // so that we can stick service objects into sets. last_seen is ignored
         return
-          std::less<std::string>()(service_name, o.service_name) &&
-          std::less<std::string>()(computer_name, o.computer_name) &&
+          std::less<std::string>()(service_name, o.service_name) ||
+          std::less<std::string>()(computer_name, o.computer_name) ||
           std::less<boost::asio::ip::tcp::endpoint>()(endpoint, o.endpoint)
         ;
       }
