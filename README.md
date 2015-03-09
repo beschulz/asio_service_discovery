@@ -42,7 +42,7 @@ the optional callback is called.
   io_service.run();
 ```
 
-### The discoverer
+### The Discoverer
 
 ```
   boost::asio::io_service io_service;
