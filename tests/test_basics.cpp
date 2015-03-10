@@ -32,6 +32,20 @@ BOOST_AUTO_TEST_SUITE( basic_tests )
         BOOST_CHECK_NE(a, d);
         BOOST_CHECK_LT(a, d);
         BOOST_CHECK( !(d<a) );
+
+        service_discoverer::service e = a;
+        e.endpoint.address(boost::asio::ip::address::from_string("1.2.3.5"));
+        BOOST_CHECK_NE(a, e);
+        BOOST_CHECK_LT(a, e);
+        BOOST_CHECK( !(e<a) );
+
+        service_discoverer::service f = a;
+        service_discoverer::service g = a;
+        f.endpoint.port(1338);
+        g.endpoint.address(boost::asio::ip::address::from_string("1.2.3.5"));
+        BOOST_CHECK_NE(f, g);
+        BOOST_CHECK_LT(f, g);
+        BOOST_CHECK( !(g<f) );
     }
 
     BOOST_AUTO_TEST_CASE( test_basic_functionality )
