@@ -38,11 +38,10 @@ class service_discoverer
       bool operator < (const service& o) const
       {
         // so that we can stick service objects into sets. last_seen is ignored
-        return
-          std::less<std::string>()(service_name, o.service_name) ||
-          std::less<std::string>()(computer_name, o.computer_name) ||
-          std::less<boost::asio::ip::tcp::endpoint>()(endpoint, o.endpoint)
-        ;
+          if(service_name != o.service_name) return std::less<std::string>()(service_name, o.service_name);
+          if(computer_name != o.computer_name) return std::less<std::string>()(computer_name, o.computer_name);
+          if(endpoint != o.endpoint) return std::less<boost::asio::ip::tcp::endpoint>()(endpoint, o.endpoint);
+          return false; // they are equal
       }
 
       bool operator == (const service& o) const
