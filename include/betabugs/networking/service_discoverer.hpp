@@ -17,6 +17,7 @@
 #include <string>
 #include <set>
 #include <boost/asio.hpp>
+#include "detail/std_chrono_time_traits.hpp"
 
 namespace betabugs {
 namespace networking {
@@ -75,19 +76,26 @@ class service_discoverer
 	typedef std::set<service> services;
 	services discovered_services;
 
-	typedef std::function<void(const services& services)> on_service_discovered_t;
+	typedef std::function<void(const services& services)> on_services_changed_t;
 
 	service_discoverer(boost::asio::io_service& io_service,
 		const std::string& listen_for_service, // the service to watch out for
-		const on_service_discovered_t on_service_discovered = on_service_discovered_t(),
-		const short multicast_port = 30001,
+		const on_services_changed_t on_services_changed,
+		const std::chrono::steady_clock::duration max_idle = std::chrono::seconds(30), ///< services not seen for this amount of time will be removed from the set
+		const size_t max_services = 10, ///< maximum number of services to hold
+		const unsigned short multicast_port = 30001,
 		const boost::asio::ip::address& listen_address = boost::asio::ip::address::from_string("0.0.0.0"),
 		const boost::asio::ip::address& multicast_address = boost::asio::ip::address::from_string("239.255.0.1")
 	)
 		: listen_for_service_(listen_for_service)
 		, socket_(io_service)
-		, on_service_discovered_(on_service_discovered)
+		, idle_check_timer_(io_service)
+		, on_services_changed_(on_services_changed)
+		, max_idle_(max_idle)
+		, max_services_(max_services)
 	{
+		assert(max_services_ > 0);
+
 		// Create the socket so that multiple may be bound to the same address.
 		boost::asio::ip::udp::endpoint listen_endpoint(
 			listen_address, multicast_port);
@@ -106,7 +114,7 @@ class service_discoverer
 	void handle_message(const std::string& message, const boost::asio::ip::udp::endpoint& sender_endpoint)
 	{
 		std::vector<std::string> tokens;
-		{ // simpleton parser
+		{ // simpleton "parser"
 			std::istringstream f(message);
 			std::string s;
 			while (getline(f, s, ':'))
@@ -156,15 +164,65 @@ class service_discoverer
 		if (service_name == listen_for_service_)
 		{
 			// we need to do a replace here, because discovered_service might compare equal
-			// to an item already in the set. In this case no asignment would be performed and
+			// to an item already in the set. In this case no assignment would be performed and
 			// therefore last_seen would not be updated
 			discovered_services.erase(discovered_service);
 			discovered_services.insert(discovered_service);
 
-			if (on_service_discovered_)
+			remove_idle_services();
+
+			// if we have to much services, we need to drop the oldest one
+			if (discovered_services.size() > max_services_)
 			{
-				on_service_discovered_(discovered_services);
+				// determine service whose last_seen time point is the smallest (i.e. the oldest)
+				services::iterator oldest_pos =
+					std::min_element(
+						discovered_services.begin(),
+						discovered_services.end(),
+						[](const service& a, const service& b)
+						{
+							return a.last_seen < b.last_seen;
+						}
+					);
+				assert(oldest_pos != discovered_services.end());
+				discovered_services.erase(oldest_pos);
 			}
+
+			{ // manage the idle_check_timer in case the service dies and we receive no other announcements
+
+				{ // cancel the idle_check_timer
+					boost::system::error_code ec;
+					idle_check_timer_.cancel(ec);
+					if (ec)
+						std::cerr << ec.message();
+				}
+
+				{ // determine new point in time for the timer
+					services::iterator oldest_pos =
+						std::min_element(
+							discovered_services.begin(),
+							discovered_services.end(),
+							[](const service& a, const service& b)
+							{
+								return a.last_seen < b.last_seen;
+							}
+						);
+					assert(oldest_pos != discovered_services.end());
+
+					idle_check_timer_.expires_at(oldest_pos->last_seen + max_idle_);
+					idle_check_timer_.async_wait(
+						[this](const boost::system::error_code& ec)
+						{
+							if (!ec && remove_idle_services())
+							{
+								on_services_changed_(discovered_services);
+							}
+						}
+					);
+				}
+			}
+
+			on_services_changed_(discovered_services);
 		}
 		else
 		{
@@ -178,33 +236,67 @@ class service_discoverer
 		socket_.async_receive(boost::asio::null_buffers(),
 			[this](const boost::system::error_code& error, unsigned int)
 			{
-				size_t bytes_available = socket_.available();
+				if (error)
+				{
+					std::cerr << error.message() << std::endl;
+				}
+				else
+				{
+					size_t bytes_available = socket_.available();
 
-				auto receive_buffer = std::make_shared<std::vector<char>>(bytes_available);
-				auto sender_endpoint = std::make_shared<boost::asio::ip::udp::endpoint>();
+					auto receive_buffer = std::make_shared<std::vector<char>>(bytes_available);
+					auto sender_endpoint = std::make_shared<boost::asio::ip::udp::endpoint>();
 
-				socket_.async_receive_from(
-					boost::asio::buffer(receive_buffer->data(), receive_buffer->size()), *sender_endpoint,
-					[this, receive_buffer, sender_endpoint] // we hold on to the shared_ptrs, so that it does not delete it's contents
-						(const boost::system::error_code& error, size_t bytes_recvd)
-					{
-						if (error)
+					socket_.async_receive_from(
+						boost::asio::buffer(receive_buffer->data(), receive_buffer->size()), *sender_endpoint,
+						[this, receive_buffer, sender_endpoint] // we hold on to the shared_ptrs, so that it does not delete it's contents
+							(const boost::system::error_code& error, size_t bytes_recvd)
 						{
-							std::cerr << error.message() << std::endl;
-						}
-						else
-						{
-							this->handle_message({receive_buffer->data(), receive_buffer->data() + bytes_recvd}, *sender_endpoint);
-							start_receive();
-						}
-					});
-
+							if (error)
+							{
+								std::cerr << error.message() << std::endl;
+							}
+							else
+							{
+								this->handle_message({receive_buffer->data(), receive_buffer->data() + bytes_recvd}, *sender_endpoint);
+								start_receive();
+							}
+						});
+				}
 			});
 	}
 
+
+	// throw out services that have not been seen for to long, returns true, if at least one service was removed, false otherwise.
+	bool remove_idle_services()
+	{
+		auto dead_line = std::chrono::steady_clock::now() - max_idle_;
+		bool services_removed = false;
+
+		for (services::const_iterator i = discovered_services.begin(); i != discovered_services.end();)
+		{
+			if (i->last_seen < dead_line)
+			{
+				i = discovered_services.erase(i);
+				services_removed = true;
+			}
+			else
+				++i;
+		}
+
+		return services_removed;
+	}
+
+	typedef boost::asio::basic_deadline_timer<
+		std::chrono::steady_clock,
+		detail::std_chrono_time_traits<std::chrono::steady_clock>> steady_clock_deadline_timer_t;
+
 	const std::string listen_for_service_;
 	boost::asio::ip::udp::socket socket_;
-	on_service_discovered_t on_service_discovered_;
+	steady_clock_deadline_timer_t idle_check_timer_;
+	const on_services_changed_t on_services_changed_;
+	const std::chrono::steady_clock::duration max_idle_;
+	const size_t max_services_;
 };
 
 }
