@@ -33,8 +33,8 @@ class service_announcer
 	service_announcer(
 		boost::asio::io_service& io_service,
 		const std::string& service_name, ///< the name of the announced service
-		const short service_port, ///< the port where the service listens on
-		const short multicast_port = 30001, ///< the port this udp multicast sender sends to
+		const unsigned short service_port, ///< the port where the service listens on
+		const unsigned short multicast_port = 30001, ///< the port this udp multicast sender sends to
 		const boost::asio::ip::address& multicast_address = boost::asio::ip::address::from_string("239.255.0.1")
 	)
 		: endpoint_(multicast_address, multicast_port)
@@ -108,7 +108,7 @@ class service_announcer
 	boost::asio::deadline_timer timer_;
 	std::string message_;
 	const std::string service_name_;
-	const short service_port_;
+	const unsigned short service_port_;
 };
 
 }
