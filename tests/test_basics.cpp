@@ -80,6 +80,7 @@ BOOST_AUTO_TEST_CASE(test_basic_functionality)
 		[&io_service, &did_discover_service]
 			(const boost::system::error_code& error)
 		{
+			BOOST_CHECK(!error);
 			BOOST_CHECK(did_discover_service);
 			io_service.stop();
 		});
@@ -120,6 +121,7 @@ BOOST_AUTO_TEST_CASE(test_service_filtering)
 		[&io_service, &did_discover_service]
 			(const boost::system::error_code& error)
 		{
+			BOOST_CHECK(!error);
 			BOOST_CHECK(did_discover_service);
 			io_service.stop();
 		});
@@ -144,6 +146,7 @@ BOOST_AUTO_TEST_CASE(test_threaded)
 			[&io_service, &did_discover_service]
 				(const boost::system::error_code& error)
 			{
+				BOOST_CHECK(!error);
 				BOOST_CHECK(did_discover_service);
 				io_service.stop();
 			});
@@ -180,6 +183,7 @@ BOOST_AUTO_TEST_CASE(test_threaded)
 			[&io_service, &did_discover_service]
 				(const boost::system::error_code& error)
 			{
+				BOOST_CHECK(!error);
 				BOOST_CHECK(did_discover_service);
 				io_service.stop();
 			});
@@ -231,6 +235,7 @@ BOOST_AUTO_TEST_CASE(test_overflow)
 		[&io_service, &did_discover_service]
 			(const boost::system::error_code& error)
 		{
+			BOOST_CHECK(!error);
 			BOOST_CHECK(did_discover_service);
 			io_service.stop();
 		});
@@ -268,6 +273,7 @@ BOOST_AUTO_TEST_CASE(test_multiple_services)
 		[&io_service, &number_of_discovered_services]
 			(const boost::system::error_code& error)
 		{
+			BOOST_CHECK(!error);
 			BOOST_CHECK_EQUAL(number_of_discovered_services, 2);
 			io_service.stop();
 		});
