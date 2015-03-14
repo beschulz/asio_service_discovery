@@ -49,7 +49,11 @@ class service_announcer
   private:
 	void handle_send_to(const boost::system::error_code& error)
 	{
-		if (!error)
+		if (error)
+		{
+			std::cerr << error.message() << std::endl;
+		}
+		else
 		{
 			timer_.expires_from_now(boost::posix_time::seconds(1));
 			timer_.async_wait(
@@ -57,10 +61,6 @@ class service_announcer
 				{
 					this->handle_timeout(error);
 				});
-		}
-		else
-		{
-			std::cerr << error.message() << std::endl;
 		}
 	}
 
