@@ -173,7 +173,8 @@ class service_discoverer
     {
         // first do a receive with null_buffers to determine the size
         socket_.async_receive(boost::asio::null_buffers(),
-            [this](const boost::system::error_code& error, unsigned int){
+			[this](const boost::system::error_code& error, unsigned int)
+			{
             size_t bytes_available = socket_.available();
 
             auto receive_buffer = std::make_shared<std::vector<char>>(bytes_available);
@@ -203,4 +204,5 @@ class service_discoverer
     on_service_discovered_t on_service_discovered_;
 };
 
-}}
+}
+}

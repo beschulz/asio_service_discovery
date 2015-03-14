@@ -82,9 +82,9 @@ class service_announcer
 			<< ":" << service_port_;
 
 		if (error_code)
-        {
-            std::cerr << error_code.message() << std::endl;
-        }
+		{
+			std::cerr << error_code.message() << std::endl;
+		}
 
 		message_ = os.str();
 
