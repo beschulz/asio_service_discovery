@@ -95,7 +95,7 @@ class service_announcer
 
 		socket_.async_send_to(
 			boost::asio::buffer(message_), endpoint_,
-			[this](const boost::system::error_code& error, std::size_t bytes_transferred)
+			[this](const boost::system::error_code& error, std::size_t /*bytes_transferred*/)
 			{
 				this->handle_send_to(error);
 			}
