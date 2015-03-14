@@ -67,4 +67,4 @@ In case you find any bugs, please don't hesitate to contact me. Also pull-reques
 
 ## Platform support
 
-The discovery *should* work on any platform, that is supported by boost::asio. It's currently only tested on OSX. If you plan on using this on iOS or Android, please report you experience.
+The discovery *should* work on any platform, that is supported by boost::asio. It works like a charm on OSX and iOS. If you plan on using this on Linux, Android or Windows, please report you experience.
