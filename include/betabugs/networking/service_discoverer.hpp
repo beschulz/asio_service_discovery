@@ -8,6 +8,11 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+#ifndef BB_SERVICE_DISCOVERER_HPP_INCLUDED
+#define BB_SERVICE_DISCOVERER_HPP_INCLUDED
+
+#pragma once
+
 #include <iostream>
 #include <string>
 #include <set>
@@ -201,3 +206,5 @@ class service_discoverer
 
 }
 }
+
+#endif /* BB_SERVICE_DISCOVERER_HPP_INCLUDED */

@@ -8,6 +8,11 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+#ifndef BB_SERVICE_ANNOUNCER_HPP_INCLUDED
+#define BB_SERVICE_ANNOUNCER_HPP_INCLUDED
+
+#pragma once
+
 #include <iostream>
 #include <sstream>
 #include <boost/asio.hpp>
@@ -108,3 +113,5 @@ class service_announcer
 
 }
 }
+
+#endif /* BB_SERVICE_ANNOUNCER_HPP_INCLUDED */
