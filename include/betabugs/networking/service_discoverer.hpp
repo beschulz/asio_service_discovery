@@ -33,6 +33,9 @@ namespace networking {
 class service_discoverer
 {
   public:
+	/*!
+	* Represents a discovered service
+	* */
 	struct service
 	{
 		/* const */ std::string service_name; ///< the name of the service
