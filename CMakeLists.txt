@@ -12,5 +12,5 @@ foreach(test_file ${tests})
 
     add_executable(${test_name} "${CMAKE_CURRENT_SOURCE_DIR}/tests/${test_file}")
     target_include_directories(${test_name} PUBLIC "./include")
-    target_link_libraries(${test_name} "boost_system")
+    target_link_libraries(${test_name} "boost_system" "boost_unit_test_framework")
 endforeach(test_file)

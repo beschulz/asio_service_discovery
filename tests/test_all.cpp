@@ -4,7 +4,8 @@
 
 #ifndef BOOST_TEST_MODULE
 #	define BOOST_TEST_MODULE all_tests
-#	include <boost/test/included/unit_test.hpp>
+#	define BOOST_TEST_DYN_LINK
+#	include <boost/test/unit_test.hpp>
 #endif /* BOOST_TEST_MODULE */
 
 #include "test_basics.cpp"
