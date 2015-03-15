@@ -7,8 +7,6 @@
 #	include <boost/test/included/unit_test.hpp>
 #endif /* BOOST_TEST_MODULE */
 
-#include <boost/test/included/unit_test.hpp>
-
 #include <betabugs/networking/service_announcer.hpp>
 #include <betabugs/networking/service_discoverer.hpp>
 #include <thread>
