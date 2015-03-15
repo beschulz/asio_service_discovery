@@ -3,14 +3,14 @@
 <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Asio Service Discovery: Main Page : Components for service discovery via udp multicasting. It&#39;s using boost::asio for async networking. It&#39;s non-blocking and non-locking.">
+    <meta name="description" content="Asio Service Discovery: Class Members - Typedefs : Components for service discovery via udp multicasting. It&#39;s using boost::asio for async networking. It&#39;s non-blocking and non-locking.">
     <!-- For Mobile Devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
     <meta name="generator" content="Doxygen 1.8.6"/>
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <title>Asio Service Discovery: Main Page</title>
+    <title>Asio Service Discovery: Class Members - Typedefs</title>
     <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
     <script type="text/javascript" src="dynsections.js"></script>
     <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -39,7 +39,7 @@
 <nav class="navbar navbar-default" role="navigation">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand">Main Page</a>
+            <a class="navbar-brand">Class Members - Typedefs</a>
         </div>
     </div>
 </nav>
@@ -56,8 +56,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -77,6 +77,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
+      <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
+      <li class="current"><a href="functions.html"><span>Class&#160;Members</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow3" class="tabs2">
+    <ul class="tablist">
+      <li><a href="functions.html"><span>All</span></a></li>
+      <li><a href="functions_func.html"><span>Functions</span></a></li>
+      <li><a href="functions_vars.html"><span>Variables</span></a></li>
+      <li class="current"><a href="functions_type.html"><span>Typedefs</span></a></li>
+    </ul>
+  </div>
 </div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -92,42 +107,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<div class="header">
-  <div class="headertitle">
-<div class="title">Asio Service Discovery Documentation</div>  </div>
-</div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a href="https://travis-ci.org/beschulz/asio_service_discovery">![Build Status](https://travis-ci.org/beschulz/asio_service_discovery.svg?branch=master)</a></p>
-<p>Components for service discovery via udp multicasting. It's using boost::asio for async networking. It's non-blocking and non-locking.</p>
-<p>The best way to get started is having a [look at the tests](tests). Basic functionality is derived from <a href="http://www.boost.org/doc/libs/1_37_0/doc/html/boost_asio/example/multicast/">boost::asios udp multicast example</a> </p>
-<blockquote class="doxtable">
-<p><b>Note</b> the max packet size for a udp packet is limited. This library supports whatever the maximum size for udp packets on the machine(s) it's running on is (~8kb on my machine). But keep that in mind, when choosing a service name. But anything below a kb will probably be allright. If you get a "Message to long" error, be sure, that you did not chose a ridiculously long service name.</p>
-<p></p>
-</blockquote>
-<h2>requirements</h2>
-<ul>
-<li>asio_service_discovery is using boost::asio, therefore you need the boost asio headers and you need to link agains boost_system.</li>
-<li>You also need a compiler that supports C++11</li>
-<li>If you want to run the tests, you also need to install cmake</li>
+&#160;<ul>
+<li>on_services_changed_t
+: <a class="el" href="classbetabugs_1_1networking_1_1service__discoverer.html#a512ce13e4f2696a78baeda88b11862cc">betabugs::networking::service_discoverer</a>
+</li>
+<li>services
+: <a class="el" href="classbetabugs_1_1networking_1_1service__discoverer.html#a4b0aae359e721503f1bcd8419724516f">betabugs::networking::service_discoverer</a>
+</li>
 </ul>
-<h2>How it works</h2>
-<p>There are two components: service_announcer and service_discoverer.</p>
-<h3><a href="include/betabugs/networking/service_announcer.hpp">The Announcer</a></h3>
-<p>The announcer multicasts information about the service it's announcing in one second intervals. The packet format is: service_name:computer_name:port You have to pass service_name and service_port to the service_announcer. they can be freely chosen.</p>
-<h3><a href="include/betabugs/networking/service_discoverer.hpp">The Discoverer</a></h3>
-<p>The discoverer listens for incomming multicast packets that match the service_name it was configured with. It hold a set of service_discoverer::service objects. Each time a packet comes in, it is parsed and if the service name matches, a service_discoverer::service objects is constructed and added to the set. After that the optional callback is called.</p>
-<h2>a simple example</h2>
-<h3>The Announcer</h3>
-<p>``` boost::asio::io_service io_service; <a class="el" href="classbetabugs_1_1networking_1_1service__announcer.html">betabugs::networking::service_announcer</a> announcer(io_service, "my_service", 1337); io_service.run(); ```</p>
-<h3>The Discoverer</h3>
-<p>``` boost::asio::io_service io_service; <a class="el" href="classbetabugs_1_1networking_1_1service__discoverer.html">betabugs::networking::service_discoverer</a> discoverer(io_service, "my_service", [](const service_discoverer::services&amp; services){ std::clog &lt;&lt; "my_service is available on the following machines:" &lt;&lt; std::endl; for(const auto&amp; service : services) { std::clog &lt;&lt; "  " &lt;&lt; service &lt;&lt; std::endl; } }); io_service.run(); ```</p>
-<h2>License</h2>
-<p>This library is Distributed under the <a href="http://www.boost.org/LICENSE_1_0.txt">Boost Software License, Version 1.0</a> .</p>
-<h2>Bugs</h2>
-<p>In case you find any bugs, please don't hesitate to contact me. Also pull-requests are highly apprechiated.</p>
-<h2>Platform support</h2>
-<p>The discovery <em>should</em> work on any platform, that is supported by boost::asio. It works like a charm on OSX and iOS. If you plan on using this on Linux, Android or Windows, please report you experience. </p>
-</div></div><!-- contents -->
+</div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.8-->
 <!-- start footer part -->
 </div>

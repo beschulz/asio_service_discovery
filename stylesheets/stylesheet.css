@@ -137,15 +137,15 @@ img {
   position: relative;
   margin: 0 auto;
   max-width: 739px;
-  padding: 5px;
+  /*padding: 5px;
   margin: 10px 0 10px 0;
-  border: 1px solid #ebebeb;
+  border: 1px solid #ebebeb;*/
 
-  box-shadow: 0 0 5px #ebebeb;
+  /*box-shadow: 0 0 5px #ebebeb;
   -webkit-box-shadow: 0 0 5px #ebebeb;
   -moz-box-shadow: 0 0 5px #ebebeb;
   -o-box-shadow: 0 0 5px #ebebeb;
-  -ms-box-shadow: 0 0 5px #ebebeb;
+  -ms-box-shadow: 0 0 5px #ebebeb;*/
 }
 
 p img {
@@ -234,7 +234,7 @@ hr {
 }
 
 table {
-  border: 1px solid #373737;
+  /*border: 1px solid #373737;*/
   margin-bottom: 20px;
   text-align: left;
  }
@@ -248,7 +248,7 @@ th {
 
 td {
   padding: 10px;
-  border: 1px solid #373737;
+  /*border: 1px solid #373737;*/
  }
 
 form {
