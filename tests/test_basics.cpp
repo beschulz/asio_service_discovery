@@ -1,6 +1,7 @@
-#define BOOST_TEST_MODULE basic_tests
-
-#include <boost/test/included/unit_test.hpp>
+#ifndef BOOST_TEST_MODULE
+#	define BOOST_TEST_MODULE basic_tests
+#	include <boost/test/included/unit_test.hpp>
+#endif /* BOOST_TEST_MODULE */
 
 #include <betabugs/networking/service_announcer.hpp>
 #include <betabugs/networking/service_discoverer.hpp>

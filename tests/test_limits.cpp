@@ -4,6 +4,7 @@
 
 #ifndef BOOST_TEST_MODULE
 #	define BOOST_TEST_MODULE limit_tests
+#	include <boost/test/included/unit_test.hpp>
 #endif /* BOOST_TEST_MODULE */
 
 #include <boost/test/included/unit_test.hpp>
