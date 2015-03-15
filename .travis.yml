@@ -5,13 +5,14 @@ compiler:
 os:
   - linux
   - osx
-before_install: ./install_dependencies.sh
+
+before_install:
+  - ./install_dependencies.sh
 
 script:
   - mkdir -p build || exit $?
   - cd build || exit $?
-  - cmake --help
   - cmake .. || exit $?
   - make all || exit $?
-  - test_all || exit $?
+  - ./test_all || exit $?
   - cd .. || exit $?

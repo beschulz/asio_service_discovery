@@ -5,7 +5,6 @@ then
     #cmake v2.8.12 is installed on the Mac workers now
     #brew update
     #brew install cmake
-    echo
     brew update
     brew install boost
 else
