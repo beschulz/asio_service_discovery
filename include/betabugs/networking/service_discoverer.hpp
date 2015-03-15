@@ -215,7 +215,7 @@ class service_discoverer
 							return a.last_seen < b.last_seen;
 						}
 					);
-				assert(oldest_pos != discovered_services_.end())discovered_services_;
+				assert(oldest_pos != discovered_services_.end());
 				discovered_services_.erase(oldest_pos);
 			}
 
@@ -238,7 +238,7 @@ class service_discoverer
 								return a.last_seen < b.last_seen;
 							}
 						);
-					assert(oldest_pos != discovered_services_.end())discovered_services_;
+					assert(oldest_pos != discovered_services_.end());
 
 					idle_check_timer_.expires_at(oldest_pos->last_seen + max_idle_);
 					idle_check_timer_.async_wait(
