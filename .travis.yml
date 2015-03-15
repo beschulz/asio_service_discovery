@@ -15,8 +15,6 @@ before_install:
 
   - sudo apt-get update -qq
 
-  - ./install_dependencies.sh
-
 install:
   # g++4.8.1
   - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
