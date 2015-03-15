@@ -1,7 +1,5 @@
 # asio_service_discovery
 
-[![Build Status](https://travis-ci.org/beschulz/asio_service_discovery.svg)](https://travis-ci.org/beschulz/asio_service_discovery)
-
 Components for service discovery via udp multicasting. It's using boost::asio for async networking. It's non-blocking and non-locking.
 
 The best way to get started is having a [look at the tests](tests).
