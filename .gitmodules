@@ -1,0 +1,4 @@
+[submodule "docs/html"]
+	path = docs/html
+	url = https://github.com/beschulz/asio_service_discovery.git
+	branch = gh-pages
