@@ -7,7 +7,7 @@ os:
   - osx
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq libboost-asio-dev
+  - sudo apt-get install -qq libboost-dev
 script:
   - mkdir -p build
   - cd build
