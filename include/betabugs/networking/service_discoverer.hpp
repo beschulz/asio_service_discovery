@@ -28,6 +28,26 @@ namespace networking {
 * on_service_discovered is a std::function, that gets a services set passed as its first and only
 * argument.
 *
+* example:
+* @code
+*
+* boost::asio::io_service io_service;
+*
+* service_discoverer discoverer(
+* 	io_service,
+* 	"my_awesome_service",
+* 	[](const service_discoverer::services& services)
+* 	{
+* 		for(auto& service : services)
+* 		{
+* 			std::cout << "discovered: " service << std::endl;
+* 		}
+* 	}
+* );
+*
+* io_service.run();
+* @endcode
+*
 * Note: In case of error, this class just prints to std::cerr
 *
 * */
@@ -41,7 +61,7 @@ class service_discoverer
 	{
 		/* const */ std::string service_name; ///< the name of the service
 		/* const */ std::string computer_name; ///< the name of the computer the service is running on
-		/* const */ boost::asio::ip::tcp::endpoint endpoint; ///< enpoint you should connect to
+		/* const */ boost::asio::ip::tcp::endpoint endpoint; ///< enpoint you should connect to. Even though, it's an tcp endpoint, it's up to you, what you do with the data.
 		/* const */ std::chrono::steady_clock::time_point last_seen;
 
 		bool operator<(const service& o) const
@@ -73,19 +93,30 @@ class service_discoverer
 		}
 	};
 
+	/// a set of discovered services
 	typedef std::set<service> services;
-	services discovered_services;
 
+	/// this callback gets called, when ever the set of available services changes
 	typedef std::function<void(const services& services)> on_services_changed_t;
 
-	service_discoverer(boost::asio::io_service& io_service,
-		const std::string& listen_for_service, // the service to watch out for
-		const on_services_changed_t on_services_changed,
+	/*!
+	* Constructs a service_discoverer.
+	* ================================
+	*
+	* listen for udp multicast packets announcing listen_for_service on listen_address:multicast_port.
+	*
+	* Call on_services_changed each time a service has been discovered or a service has been idle for too long.
+	* To protect against malicious announcers, there is a limit (max_services) on how many services will end up in the set of
+	* discovered services.
+	* */
+	service_discoverer(boost::asio::io_service& io_service, ///< io_service to use
+		const std::string& listen_for_service, ///< the service to watch out for
+		const on_services_changed_t on_services_changed, ///< gets called when ever the set of discovered services changes
 		const std::chrono::steady_clock::duration max_idle = std::chrono::seconds(30), ///< services not seen for this amount of time will be removed from the set
 		const size_t max_services = 10, ///< maximum number of services to hold
-		const unsigned short multicast_port = 30001,
-		const boost::asio::ip::address& listen_address = boost::asio::ip::address::from_string("0.0.0.0"),
-		const boost::asio::ip::address& multicast_address = boost::asio::ip::address::from_string("239.255.0.1")
+		const unsigned short multicast_port = 30001, ///< the udp multicast port to listen on
+		const boost::asio::ip::address& listen_address = boost::asio::ip::address::from_string("0.0.0.0"), ///< address to listen on
+		const boost::asio::ip::address& multicast_address = boost::asio::ip::address::from_string("239.255.0.1") ///< must match the one used in service_announcer
 	)
 		: listen_for_service_(listen_for_service)
 		, socket_(io_service)
@@ -166,26 +197,26 @@ class service_discoverer
 			// we need to do a replace here, because discovered_service might compare equal
 			// to an item already in the set. In this case no assignment would be performed and
 			// therefore last_seen would not be updated
-			discovered_services.erase(discovered_service);
-			discovered_services.insert(discovered_service);
+			discovered_services_.erase(discovered_service);
+			discovered_services_.insert(discovered_service);
 
 			remove_idle_services();
 
 			// if we have to much services, we need to drop the oldest one
-			if (discovered_services.size() > max_services_)
+			if (discovered_services_.size() > max_services_)
 			{
 				// determine service whose last_seen time point is the smallest (i.e. the oldest)
 				services::iterator oldest_pos =
 					std::min_element(
-						discovered_services.begin(),
-						discovered_services.end(),
+						discovered_services_.begin(),
+						discovered_services_.end(),
 						[](const service& a, const service& b)
 						{
 							return a.last_seen < b.last_seen;
 						}
 					);
-				assert(oldest_pos != discovered_services.end());
-				discovered_services.erase(oldest_pos);
+				assert(oldest_pos != discovered_services_.end())discovered_services_;
+				discovered_services_.erase(oldest_pos);
 			}
 
 			{ // manage the idle_check_timer in case the service dies and we receive no other announcements
@@ -200,14 +231,14 @@ class service_discoverer
 				{ // determine new point in time for the timer
 					services::iterator oldest_pos =
 						std::min_element(
-							discovered_services.begin(),
-							discovered_services.end(),
+							discovered_services_.begin(),
+							discovered_services_.end(),
 							[](const service& a, const service& b)
 							{
 								return a.last_seen < b.last_seen;
 							}
 						);
-					assert(oldest_pos != discovered_services.end());
+					assert(oldest_pos != discovered_services_.end())discovered_services_;
 
 					idle_check_timer_.expires_at(oldest_pos->last_seen + max_idle_);
 					idle_check_timer_.async_wait(
@@ -215,14 +246,14 @@ class service_discoverer
 						{
 							if (!ec && remove_idle_services())
 							{
-								on_services_changed_(discovered_services);
+								on_services_changed_(discovered_services_);
 							}
 						}
 					);
 				}
 			}
 
-			on_services_changed_(discovered_services);
+			on_services_changed_(discovered_services_);
 		}
 		else
 		{
@@ -273,11 +304,11 @@ class service_discoverer
 		auto dead_line = std::chrono::steady_clock::now() - max_idle_;
 		bool services_removed = false;
 
-		for (services::const_iterator i = discovered_services.begin(); i != discovered_services.end();)
+		for (services::const_iterator i = discovered_services_.begin(); i != discovered_services_.end();)
 		{
 			if (i->last_seen < dead_line)
 			{
-				i = discovered_services.erase(i);
+				i = discovered_services_.erase(i);
 				services_removed = true;
 			}
 			else
@@ -297,6 +328,8 @@ class service_discoverer
 	const on_services_changed_t on_services_changed_;
 	const std::chrono::steady_clock::duration max_idle_;
 	const size_t max_services_;
+
+	services discovered_services_;
 };
 
 }

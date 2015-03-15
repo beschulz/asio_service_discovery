@@ -22,7 +22,15 @@ namespace networking {
 
 /*!
 * class to announce a named network service, that can be discovered via the service_discoverer.
-* usage: service_announcer announcer(io_service, name_of_my_service, port_this_service_runs_on);
+*
+* example:
+* @code
+* boost::asio::io_service io_service;
+*
+* service_announcer announcer(io_service, "my_awesome_service", 1337);
+*
+* io_service.run();
+* @endcode
 *
 * Note: In case of error, this class just prints to std::cerr
 *       In case of an unknown service, this class prints it to std::clog
@@ -30,12 +38,17 @@ namespace networking {
 class service_announcer
 {
   public:
+	/*!
+	* announce service named service_name listening on service_port in one second intervals.
+	* Note, that it is not required, that the service actually listens on service_port and that
+	* there is no coupling between the announcer and you service.
+	* */
 	service_announcer(
-		boost::asio::io_service& io_service,
+		boost::asio::io_service& io_service, ///< io_service to use
 		const std::string& service_name, ///< the name of the announced service
 		const unsigned short service_port, ///< the port where the service listens on
 		const unsigned short multicast_port = 30001, ///< the port this udp multicast sender sends to
-		const boost::asio::ip::address& multicast_address = boost::asio::ip::address::from_string("239.255.0.1")
+		const boost::asio::ip::address& multicast_address = boost::asio::ip::address::from_string("239.255.0.1") ///< mulicast address to use. see: http://en.wikipedia.org/wiki/Multicast_address
 	)
 		: endpoint_(multicast_address, multicast_port)
 		, socket_(io_service, endpoint_.protocol())
