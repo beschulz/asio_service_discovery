@@ -11,6 +11,7 @@ before_install:
 script:
   - mkdir -p build || exit $?
   - cd build || exit $?
+  - cmake --help
   - cmake .. || exit $?
   - make all || exit $?
   - test_all || exit $?
