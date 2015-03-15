@@ -7,7 +7,7 @@ os:
   - osx
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq libboost-dev
+  - sudo apt-get install -qq libboost-dev cmake
 script:
   - mkdir -p build || exit $?
   - cd build || exit $?
