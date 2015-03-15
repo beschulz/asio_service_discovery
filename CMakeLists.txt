@@ -5,7 +5,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra")
 
 file(GLOB_RECURSE tests RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/tests" "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp")
 
+# this is here, so that users can use a custom boost installation
+# used also by travis CI
 if(EXISTS "$ENV{BOOST_ROOT}")
+    message("******************************")
+    message(${CMAKE_LIBRARY_PATH})
+    message("******************************")
+    message(${CMAKE_INCLUDE_PATH})
+
     set(CMAKE_LIBRARY_PATH "$ENV{BOOST_ROOT}/lib" ${CMAKE_LIBRARY_PATH})
     set(CMAKE_INCLUDE_PATH "$ENV{BOOST_ROOT}/include" ${CMAKE_INCLUDE_PATH})
 
