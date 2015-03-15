@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE(test_max_idle_with_no_other_service)
 	);
 
 	boost::asio::deadline_timer timer(io_service);
-	timer.expires_from_now(boost::posix_time::seconds(3));
+	timer.expires_from_now(boost::posix_time::seconds(4));
 
 	timer.async_wait(
 		[&io_service](const boost::system::error_code& error)
