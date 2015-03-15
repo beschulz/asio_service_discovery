@@ -9,9 +9,9 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq libboost-dev
 script:
-  - mkdir -p build
-  - cd build
-  - cmake ..
-  - make all
-  - test_all
-  - cd ..
+  - mkdir -p build || exit $?
+  - cd build || exit $?
+  - cmake .. || exit $?
+  - make all || exit $?
+  - test_all || exit $?
+  - cd .. || exit $?
