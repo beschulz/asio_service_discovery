@@ -9,7 +9,7 @@ then
     brew install boost
 else
     #install a newer cmake since at this time Travis only has version 2.8.7
-    sudo add-apt-repository ppa:kalakris/cmake -y
-    sudo apt-get update -qq
-    sudo apt-get install -qq libboost-dev cmake
+    #sudo add-apt-repository ppa:kalakris/cmake -y
+    #sudo apt-get update -qq
+    #sudo apt-get install -qq libboost-dev cmake
 fi
