@@ -7,7 +7,12 @@ file(GLOB_RECURSE tests RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/tests" "${CMAKE_CU
 
 if(EXISTS "$ENV{BOOST_ROOT}")
     set(CMAKE_LIBRARY_PATH "$ENV{BOOST_ROOT}/lib" ${CMAKE_LIBRARY_PATH})
-    set(CMAKE_INCLUDE_PATH "$ENV{BOOST_ROOT}/include" ${CMAKE_LIBRARY_PATH})
+    set(CMAKE_INCLUDE_PATH "$ENV{BOOST_ROOT}/include" ${CMAKE_INCLUDE_PATH})
+
+    message("******************************")
+    message(${CMAKE_LIBRARY_PATH})
+    message("******************************")
+    message(${CMAKE_INCLUDE_PATH})
 endif(EXISTS "$ENV{BOOST_ROOT}")
 
 
