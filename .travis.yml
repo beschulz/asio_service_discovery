@@ -11,6 +11,7 @@ before_install:
 script:
   - mkdir -p build
   - cd build
+  - cmake ..
   - make all
   - test_all
   - cd ..
