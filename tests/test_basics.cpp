@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(test_overflow)
 	std::string ridiculously_long_service_name;
 	const char hex_chars[] = "0123456789abcdef";
 
-	for (int i = 0; i != 1024 * 8; ++i)
+	for (std::size_t i = 0; i != 1024 * 8; ++i)
 	{
 		ridiculously_long_service_name.push_back(hex_chars[i % sizeof(hex_chars)]);
 	}

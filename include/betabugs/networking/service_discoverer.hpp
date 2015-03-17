@@ -188,7 +188,7 @@ class service_discoverer
 			{
 				service_name,
 				computer_name,
-				boost::asio::ip::tcp::endpoint(sender_endpoint.address(), port),
+				boost::asio::ip::tcp::endpoint(sender_endpoint.address(), (unsigned short)port),
 				std::chrono::steady_clock::now()
 			};
 
