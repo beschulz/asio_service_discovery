@@ -56,6 +56,8 @@ class service_announcer
 		, service_name_(service_name)
 		, service_port_(service_port)
 	{
+		// TODO: implement via multiple sockets:
+		// http://atastypixel.com/blog/the-making-of-talkie-multi-interface-broadcasting-and-multicast/
 		write_message();
 	}
 
