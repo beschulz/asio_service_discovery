@@ -19,6 +19,10 @@
 #include <boost/asio.hpp>
 #include "detail/std_chrono_time_traits.hpp"
 
+#ifdef max // cleanup after windows
+#	undef max
+#endif
+
 namespace betabugs {
 namespace networking {
 
